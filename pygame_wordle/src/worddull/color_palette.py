@@ -1,12 +1,12 @@
 from typing import Tuple, Dict
 
 COLOR_PALETTE:Dict[str, tuple] = {
-    'text' : (0, 0, 0),
-    'background' : (64, 64, 64),#(211, 220, 155),
-    'bg_letter_all' : (125, 163, 170),
-    'bg_letter_doesnt_occur': (188, 132, 98),
-    'bg_letter_occurs_correct_spot' : (97, 159, 46),
-    'bg_letter_occurs_wrong_spot' : (217, 230, 76)
+    'background' : (64, 64, 64),
+    'black' : (0, 0, 0),
+    'blue' : (168, 193, 214),
+    'red': (221, 154, 154),
+    'green' : (97, 159, 46),
+    'yellow' : (217, 230, 76)
 }
 
 def get_rgb(target_color:str) -> Tuple[int, int, int]:

@@ -12,14 +12,22 @@
             |       |--- wordLength : int NOT NULL
             |
             |--- usedWords
-                    |--- id : int PRIMARY KEY
+            |       |--- id : int PRIMARY KEY
+            |       |--- word : text NOT NULL
+            |       |--- wordLength: int NOT NULL
+            |
+            |--- scoreboard
+                    |--- gameNumber : int PRIMARY KEY AUTOINCREMENT
+                    |--- user : text NOT NULL
+                    |--- win : boolean NOT NULL
                     |--- word : text NOT NULL
-                    |--- wordLength: int NOT NULL
+                    |--- numGuesses : integer NOT NULL
 '''
 
 import pathlib
 import sqlite3
 from typing import Dict
+from timing.timers import time_it
 
 DB_LOCATION = f'{pathlib.Path(__file__).parent.absolute()}/worddullWords.db'
 
@@ -38,6 +46,12 @@ def create_db(conn:sqlite3.Connection):
                     id integer PRIMARY KEY,
                     word text NOT NULL,
                     wordLength integer NOT NULL);""")
+    cursor.execute("""CREATE TABLE IF NOT EXISTS scoreboard(
+                    gameNumber integer PRIMARY KEY AUTOINCREMENT,
+                    user text NOT NULL,
+                    win boolean NOT NULL,
+                    word text NOT NULL,
+                    numGuesses integer NOT NULL);""")
     conn.commit()
     cursor.close()
 
@@ -77,6 +91,7 @@ def create_and_populate_db():
     populate_db(conn)
     conn.close()
 
+@time_it
 def main():
     create_and_populate_db()
 

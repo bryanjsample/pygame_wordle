@@ -78,6 +78,10 @@ def select_random_word(table:str, word_length:int) -> Tuple[int, str, int]:
     all_rows = cursor.fetchall()
     cursor.close()
     conn.close()
+    if len(all_rows) == 1:
+        return all_rows[0]
+    elif len(all_rows) == 0:
+        return False
     random_word_index = randint(0, len(all_rows)-1)
     return all_rows[random_word_index]
 
@@ -116,14 +120,37 @@ def reset_usedWords_table() -> None:
     for word_info in all_rows:
         move_word_to_table(word_info=word_info, new_table='possibleWords')
 
-# @time_it
-# def main():
-#     lengths = select_all_word_lengths('possibleWords')
-#     for length in lengths:
-#         word = select_random_word('possibleWords', length)
-#         print(word)
-#         # move_word_to_table(word, new_table='usedWords')
-#     # reset_usedWords_table()
+def update_scoreboard(user_name:str, win:bool, word:str, num_guesses:int) -> None:
+    '''Updates the scoreboard table to include the details about the game.'''
+    conn = sqlite3.connect(DB_LOCATION)
+    cursor = conn.cursor()
+    sql_statement = 'INSERT INTO scoreboard (user, win, word, numGuesses) VALUES (?, ?, ?, ?);'
+    cursor.execute(sql_statement, (user_name, win, word, num_guesses))
+    conn.commit()
+    cursor.close()
+    conn.close()
 
-# if __name__ == "__main__":
-#     main()
+@time_it
+def main():
+    lengths = select_all_word_lengths('possibleWords')
+    for i in range(10000):
+        random_index = randint(0, len(lengths)-1)
+        word_length = lengths[random_index]
+        word_info = select_random_word('possibleWords', word_length=word_length)
+        if not word_info:
+            print(f'No more words with length : {word_length}')
+            continue
+        word = word_info[1]
+        print(', '.join([str(i) for i in word_info]))
+        move_word_to_table(word_info, new_table='usedWords')
+        if randint(0, 9) > 6:
+            if randint(1,1000) == 1:
+                update_scoreboard(user_name='bryan', win=True, word=word, num_guesses=1)
+            else:
+                update_scoreboard(user_name='bryan', win=True, word=word, num_guesses=randint(2,6))
+        else:
+            update_scoreboard(user_name='bryan', win=False, word=word, num_guesses=6)
+    # reset_usedWords_table()
+
+if __name__ == "__main__":
+    main()
