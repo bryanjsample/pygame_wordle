@@ -26,4 +26,15 @@ while run:
             run = False
     pygame.display.update()
 
+SCREEN_WIDTH, SCREEN_HEIGHT = 1920, 1080
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+run = True
+while run:
+    screen.fill(color=get_rgb('background'))
+    key = pygame.key.get_pressed()
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            run = False
+    pygame.display.update()
+
 pygame.quit()
