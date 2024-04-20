@@ -1,37 +1,40 @@
 '''
-    Create a simple sqlite3 database containing two tables, possible_words and used_words.
+    Create a simple sqlite3 database containing two tables, possibleWords and usedWords.
     Upon entering the game, users can choose whether to use all words or only words that haven't been seen yet.
     Users can choose to wipe the database and reset their word history.
 
     Database schema:
-        wordle_words.db
+        wordleWords.db
             |
-            |--- possible_words
+            |--- possibleWords
             |       |--- id : int PRIMARY KEY
             |       |--- word : text NOT NULL
             |       |--- wordLength : int NOT NULL
             |
-            |--- used_words
+            |--- usedWords
                     |--- id : int PRIMARY KEY
                     |--- word : text NOT NULL
                     |--- wordLength: int NOT NULL
 '''
 
+import pathlib
 import sqlite3
-from typing import List, Dict
+from typing import Dict
+
+DB_LOCATION = f'{pathlib.Path(__file__).parent.absolute()}/wordleWords.db'
 
 def create_db(conn:sqlite3.Connection):
     '''
-        Create a simple sqlite3 database containing two tables, possible_words and used_words.
+        Create a simple sqlite3 database containing two tables, possibleWords and usedWords.
         Arguments:
             - conn : sqlite3 connection object
     '''
     cursor = conn.cursor()
-    cursor.execute("""CREATE TABLE IF NOT EXISTS possible_words(
+    cursor.execute("""CREATE TABLE IF NOT EXISTS possibleWords(
                     id integer PRIMARY KEY,
                     word text NOT NULL,
                     wordLength integer NOT NULL);""")
-    cursor.execute("""CREATE TABLE IF NOT EXISTS used_words(
+    cursor.execute("""CREATE TABLE IF NOT EXISTS usedWords(
                     id integer PRIMARY KEY,
                     word text NOT NULL,
                     wordLength integer NOT NULL);""")
@@ -62,14 +65,14 @@ def populate_db(conn:sqlite3.Connection):
     for word_id, word_tuple in words.items():
         word, word_length = word_tuple
         data_tuple = (word_id, word, word_length)
-        insert_statement = "INSERT INTO possible_words (id, word, wordLength) VALUES (?, ?, ?);"
+        insert_statement = "INSERT INTO possibleWords (id, word, wordLength) VALUES (?, ?, ?);"
         cursor.execute(insert_statement, data_tuple)
         conn.commit()
     cursor.close()
 
 def create_and_populate_db():
-    '''Creates and populates wordle_words.db'''
-    conn = sqlite3.connect('../wordle/wordle_words.db')
+    '''Creates and populates wordleWords.db'''
+    conn = sqlite3.connect(DB_LOCATION)
     create_db(conn)
     populate_db(conn)
     conn.close()
